@@ -1,6 +1,7 @@
 package ir.batna.parsetest
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,7 +12,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.parse.Parse
+import com.parse.ParseObject
+import com.parse.ParseUser
+import com.parse.http.ParseHttpResponse
 import ir.batna.parsetest.ui.theme.ParseTestTheme
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,9 +35,12 @@ class MainActivity : ComponentActivity() {
         }
 
         initializedPars()
+        Log.d("alireza", Parse.getServer().toString())
+        addGameScore()
     }
 
     private fun initializedPars() {
+        Parse.setLogLevel(Parse.LOG_LEVEL_VERBOSE);
         Parse.initialize(
             Parse.Configuration.Builder(applicationContext)
                 .applicationId(getString(R.string.app_id)) // if defined
@@ -40,6 +48,14 @@ class MainActivity : ComponentActivity() {
                 .server(getString(R.string.server_url))
                 .build()
         )
+    }
+
+    private fun addGameScore() {
+        val gameScore = ParseObject("GameScore")
+        gameScore.put("score", 1337)
+        gameScore.put("playerName", "Sean Plott")
+        gameScore.put("cheatMode", false)
+        gameScore.saveInBackground()
     }
 }
 
