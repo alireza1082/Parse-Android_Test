@@ -47,9 +47,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.parse.Parse
 import com.parse.ParseObject
+import ir.batna.parsetest.api.ParseServer
 import ir.batna.parsetest.ui.theme.ParseTestTheme
+import ir.batna.parsetest.viewmodel.MainViewModel
 
 class MainActivity : ComponentActivity() {
+    lateinit var mainViewModel: MainViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -64,29 +67,8 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
-
-        initializePars()
+        mainViewModel = MainViewModel(ParseServer(), this)
         Log.d("alireza", Parse.getServer().toString())
-        addGameScore()
-    }
-
-    private fun initializePars() {
-        Parse.setLogLevel(Parse.LOG_LEVEL_VERBOSE);
-        Parse.initialize(
-            Parse.Configuration.Builder(applicationContext)
-                .applicationId(getString(R.string.app_id)) // if defined
-                .clientKey(getString(R.string.client_key))
-                .server(getString(R.string.server_url))
-                .build()
-        )
-    }
-
-    private fun addGameScore() {
-        val gameScore = ParseObject("GameScore")
-        gameScore.put("score", 1337)
-        gameScore.put("playerName", "Sean Plott")
-        gameScore.put("cheatMode", false)
-        gameScore.saveInBackground()
     }
 }
 
