@@ -8,7 +8,7 @@ import ir.batna.parsetest.api.ParseServer
 import ir.batna.parsetest.model.Request
 import ir.batna.parsetest.model.RequestRepository
 
-class MainViewModel(parseServer: ParseServer, mainActivity: MainActivity): ViewModel() {
+class MainViewModel(parseServer: ParseServer, mainActivity: MainActivity) : ViewModel() {
     private val requestRepository = RequestRepository()
 
     private val _requestData = MutableLiveData<Request>()
@@ -17,6 +17,7 @@ class MainViewModel(parseServer: ParseServer, mainActivity: MainActivity): ViewM
     init {
         parseServer.initializePars(applicationContext = mainActivity.applicationContext)
     }
+
     fun refreshWeatherData() {
         val request = requestRepository.getRequestData()
         _requestData.value = request
