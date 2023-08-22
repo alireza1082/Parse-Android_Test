@@ -7,12 +7,22 @@ import android.util.Patterns
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults.outlinedShape
+import androidx.compose.material3.CardDefaults.shape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -25,8 +35,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -90,7 +102,8 @@ fun Greeting(name: String, context: Context) {
     var emailHasError by remember { mutableStateOf(false) }
     var emailLabel by remember { mutableStateOf("Enter your email address") }
 
-    Column {
+    Column(verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally) {
         TextField(
             value = text,
             onValueChange = { text = it },
@@ -129,12 +142,28 @@ fun Greeting(name: String, context: Context) {
                     emailHasError = true
                     emailLabel = "Invalid email address"
                 }
-                else -> Toast.makeText(context!!, "All fields are valid!", Toast.LENGTH_SHORT).show()
+                else -> Toast.makeText(context, "All fields are valid!", Toast.LENGTH_SHORT).show()
             }
         }) {
             Text("Submit")
 
         }
+        Card (modifier = Modifier
+            .padding(16.dp)
+            .border(2.dp, MaterialTheme.colorScheme.secondary, outlinedShape)
+            .background(MaterialTheme.colorScheme.primary, shape)
+            .padding(16.dp)) {
+            var expanded by remember {
+                mutableStateOf(false)
+            }
+            Column(Modifier.clickable { expanded = !expanded },
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally) {
+                Image(painterResource(id = R.drawable.ic_launcher_foreground), "image")
+                AnimatedVisibility(visible = expanded) {
+                    Text(text = "Jetpack", style = MaterialTheme.typography.bodyLarge)
+                }
+            }
+        }
     }
-
 }
