@@ -1,11 +1,13 @@
 package ir.batna.parsetest.model
 
 data class Request(
-    var objectName: String)
+    var objectName: String
+)
 
 class RequestRepository {
-    fun getRequestData(): Request {
+    fun getRequestData(): List<Request> {
         // Fetch weather data from a remote server or local storage
-        return Request("Sunny")
+        return listOf(Request("Sunny"))
+
     }
 }

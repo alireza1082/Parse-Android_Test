@@ -1,25 +1,42 @@
 package ir.batna.parsetest.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import android.annotation.SuppressLint
+import android.content.Context
 import androidx.lifecycle.ViewModel
+import com.parse.ParseObject
 import ir.batna.parsetest.MainActivity
 import ir.batna.parsetest.api.ParseServer
 import ir.batna.parsetest.model.Request
 import ir.batna.parsetest.model.RequestRepository
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class MainViewModel(parseServer: ParseServer, mainActivity: MainActivity) : ViewModel() {
-    private val requestRepository = RequestRepository()
 
-    private val _requestData = MutableLiveData<Request>()
-    val requestData: LiveData<Request> = _requestData
+    private val requestRepository = RequestRepository()
+    private val _requestData = MutableStateFlow(List<Request>(emptyList<Request>()))
+    val requestData: MutableStateFlow<List<Request>> = _requestData
+
+    private var parseServerObject: ParseServer
+
+    @SuppressLint("StaticFieldLeak")
+    private var applicationContext: Context
 
     init {
         parseServer.initializePars(applicationContext = mainActivity.applicationContext)
+        parseServerObject = parseServer
+        applicationContext = mainActivity.applicationContext
     }
 
     fun refreshWeatherData() {
         val request = requestRepository.getRequestData()
         _requestData.value = request
+    }
+
+    fun addObjectToServer(parseObject: ParseObject) {
+        parseServerObject.addObject(parseObject)
+    }
+
+    fun getFromServer() {
+
     }
 }
