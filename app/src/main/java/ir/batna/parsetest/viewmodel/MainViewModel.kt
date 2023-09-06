@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 class MainViewModel(parseServer: ParseServer, mainActivity: MainActivity) : ViewModel() {
 
     private val requestRepository = RequestRepository()
-    private val _requestData = MutableStateFlow(List<Request>(emptyList<Request>()))
+    private val _requestData = MutableStateFlow(emptyList<Request>())
     val requestData: MutableStateFlow<List<Request>> = _requestData
 
     private var parseServerObject: ParseServer
