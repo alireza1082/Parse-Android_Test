@@ -6,6 +6,7 @@ import com.parse.Parse
 import com.parse.ParseObject
 import com.parse.ParseQuery
 import ir.batna.parsetest.R
+import ir.batna.parsetest.model.Request
 
 
 class ParseServer {
@@ -23,6 +24,10 @@ class ParseServer {
                 .server(applicationContext.getString(R.string.server_url))
                 .build()
         )
+    }
+
+    fun getAllObjects(): List<Request>{
+        return emptyList()
     }
 
     fun getX(parseObject: ParseObject, x: String, key: String?): Any? {

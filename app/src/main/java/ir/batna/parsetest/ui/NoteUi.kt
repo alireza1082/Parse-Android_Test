@@ -42,7 +42,7 @@ class NoteUi {
         viewModel: MainViewModel,
         onClickListItem: () -> Unit
     ) {
-//    viewModel.parseQuery()
+        viewModel.refreshData()
         val parseModel by viewModel.requestData.collectAsState()
 
 

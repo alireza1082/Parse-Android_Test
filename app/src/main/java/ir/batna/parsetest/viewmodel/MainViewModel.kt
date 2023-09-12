@@ -28,8 +28,8 @@ class MainViewModel(parseServer: ParseServer, mainActivity: MainActivity) : View
         applicationContext = mainActivity.applicationContext
     }
 
-    fun refreshWeatherData() {
-        val request = requestRepository.getRequestData()
+    fun refreshData() {
+        val request = parseServerObject.getAllObjects()
         _requestData.value = request
     }
 
@@ -38,6 +38,5 @@ class MainViewModel(parseServer: ParseServer, mainActivity: MainActivity) : View
     }
 
     fun getFromServer() {
-
     }
 }
