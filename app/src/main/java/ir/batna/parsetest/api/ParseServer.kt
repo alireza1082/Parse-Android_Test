@@ -10,6 +10,7 @@ import ir.batna.parsetest.model.Request
 
 
 class ParseServer {
+    private val tag = "ParseServer"
 
     fun addObject(parseObject: ParseObject) {
         parseObject.saveInBackground()
@@ -54,5 +55,20 @@ class ParseServer {
             }
         }
         return parseObject1
+    }
+
+    fun getFromServer(query: ParseQuery<ParseObject>): List<ParseObject> {
+        var result: List<ParseObject> = emptyList()
+        query.findInBackground { objects , e ->
+            if (objects.isNotEmpty())
+                result = objects
+            else
+                Log.e(tag, "failed get from server with: $e")
+        }
+        return result
+    }
+
+    fun createParseQuery(objectName: String): ParseQuery<ParseObject>{
+        return ParseQuery.getQuery(objectName)
     }
 }
