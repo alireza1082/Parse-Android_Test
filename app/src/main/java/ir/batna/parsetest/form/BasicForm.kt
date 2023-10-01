@@ -39,37 +39,39 @@ import ir.batna.parsetest.R
 class BasicForm {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun GreetingForm(name: String, context: Context) {
-        var text by remember { mutableStateOf("") }
-        var password by rememberSaveable { mutableStateOf("") }
+    fun GreetingForm(context: Context) {
+
+        var name by remember { mutableStateOf("") }
         var nameHasError by remember { mutableStateOf(false) }
-        var nameLabel by remember { mutableStateOf(name) }
+        var nameLabel by remember { mutableStateOf(context.getString(R.string.defaultNameLabel)) }
+
+        var password by rememberSaveable { mutableStateOf("") }
+        var passwordHasError by remember { mutableStateOf(false) }
+        var passwordLabel by remember { mutableStateOf(context.getString(R.string.defaultPasswordLabel)) }
 
         var email by remember { mutableStateOf("") }
         var emailHasError by remember { mutableStateOf(false) }
-        var emailLabel by remember { mutableStateOf("Enter your email address") }
+        var emailLabel by remember { mutableStateOf(context.getString(R.string.defaultEmailLabel)) }
 
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             TextField(
-                value = text,
-                onValueChange = { text = it },
+                value = name,
+                onValueChange = { name = it },
                 label = { Text(text = nameLabel) },
                 textStyle = TextStyle(color = Color.Blue, fontWeight = FontWeight.Bold),
-                modifier = Modifier
-                    .padding(20.dp)
+                modifier = Modifier.padding(20.dp)
             )
 
             TextField(
                 value = password,
                 onValueChange = { password = it },
-                label = { Text("Enter password") },
+                label = { Text(text = passwordLabel) },
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                modifier = Modifier
-                    .padding(20.dp)
+                modifier = Modifier.padding(20.dp)
             )
 
             TextField(
@@ -83,17 +85,32 @@ class BasicForm {
 
             Button(onClick = {
                 when {
-                    text.isEmpty() -> {
+                    name.isEmpty() -> {
                         nameHasError = true
-                        nameLabel = "Name cannot be empty"
+                        nameLabel = context.getString(R.string.errorNameLabel)
                     }
+
+                    name.isNotEmpty() -> nameLabel = context.getString(R.string.defaultNameLabel)
 
                     !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
                         emailHasError = true
-                        emailLabel = "Invalid email address"
+                        emailLabel = context.getString(R.string.errorEmailLabel)
                     }
 
-                    else -> Toast.makeText(context, "All fields are valid!", Toast.LENGTH_SHORT).show()
+                    Patterns.EMAIL_ADDRESS.matcher(email).matches() -> emailLabel =
+                        context.getString(R.string.defaultEmailLabel)
+
+                    !PasswordValidator().execute(password).successful -> {
+                        passwordHasError = true
+                        passwordLabel = context.getString(R.string.errorPasswordLabel)
+                        password = ""
+                    }
+
+                    PasswordValidator().execute(password).successful -> passwordLabel =
+                        context.getString(R.string.defaultPasswordLabel)
+
+                    else -> Toast.makeText(context, "All fields are valid!", Toast.LENGTH_SHORT)
+                        .show()
                 }
             }) {
                 Text("Submit")

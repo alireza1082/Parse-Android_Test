@@ -25,7 +25,7 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
-                    BasicForm().GreetingForm("Android", this)
+                    BasicForm().GreetingForm(this)
                 }
             }
         }

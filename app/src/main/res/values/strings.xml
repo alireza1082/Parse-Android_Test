@@ -3,4 +3,12 @@
     <string name="server_url">http://192.168.20.23:1337/parse</string>
     <string name="app_id">PROJECT_APP</string>
     <string name="client_key">MasterKey</string>
+
+    <string name="defaultNameLabel">Name</string>
+    <string name="defaultPasswordLabel">Password</string>
+    <string name="defaultEmailLabel">Email address</string>
+
+    <string name="errorNameLabel">Name</string>
+    <string name="errorPasswordLabel">Password</string>
+    <string name="errorEmailLabel">Email address</string>
 </resources>
