@@ -53,6 +53,15 @@ class BasicForm {
         var emailHasError by remember { mutableStateOf(false) }
         var emailLabel by remember { mutableStateOf(context.getString(R.string.defaultEmailLabel)) }
 
+        fun checkValidateFields() {
+            if (name.isNotEmpty())
+                nameLabel = context.getString(R.string.defaultNameLabel)
+            if (Patterns.EMAIL_ADDRESS.matcher(email).matches())
+                emailLabel = context.getString(R.string.defaultEmailLabel)
+            if (PasswordValidator().execute(password).successful)
+                context.getString(R.string.defaultPasswordLabel)
+        }
+
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
@@ -66,21 +75,21 @@ class BasicForm {
             )
 
             TextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { Text(text = passwordLabel) },
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                modifier = Modifier.padding(20.dp)
-            )
-
-            TextField(
                 value = email,
                 isError = emailHasError,
                 label = { Text(text = emailLabel) },
                 modifier = Modifier.padding(20.dp),
                 onValueChange = { value -> email = value },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+            )
+
+            TextField(
+                value = password,
+                onValueChange = { password = it },
+                label = { Text(text = passwordLabel) },
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                modifier = Modifier.padding(20.dp)
             )
 
             Button(onClick = {
@@ -90,15 +99,10 @@ class BasicForm {
                         nameLabel = context.getString(R.string.errorNameLabel)
                     }
 
-                    name.isNotEmpty() -> nameLabel = context.getString(R.string.defaultNameLabel)
-
                     !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
                         emailHasError = true
                         emailLabel = context.getString(R.string.errorEmailLabel)
                     }
-
-                    Patterns.EMAIL_ADDRESS.matcher(email).matches() -> emailLabel =
-                        context.getString(R.string.defaultEmailLabel)
 
                     !PasswordValidator().execute(password).successful -> {
                         passwordHasError = true
@@ -106,12 +110,12 @@ class BasicForm {
                         password = ""
                     }
 
-                    PasswordValidator().execute(password).successful -> passwordLabel =
-                        context.getString(R.string.defaultPasswordLabel)
-
                     else -> Toast.makeText(context, "All fields are valid!", Toast.LENGTH_SHORT)
                         .show()
                 }
+
+                checkValidateFields()
+
             }) {
                 Text("Submit")
 

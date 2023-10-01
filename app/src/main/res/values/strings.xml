@@ -8,7 +8,7 @@
     <string name="defaultPasswordLabel">Password</string>
     <string name="defaultEmailLabel">Email address</string>
 
-    <string name="errorNameLabel">Name</string>
-    <string name="errorPasswordLabel">Password</string>
-    <string name="errorEmailLabel">Email address</string>
+    <string name="errorNameLabel">Name is empty</string>
+    <string name="errorPasswordLabel">Password is invalid!</string>
+    <string name="errorEmailLabel">Email address in invalid!</string>
 </resources>
