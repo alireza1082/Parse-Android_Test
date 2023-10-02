@@ -1,6 +1,7 @@
 package ir.batna.parsetest.form
 
 import android.content.Context
+import android.util.Log
 import android.util.Patterns
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
@@ -41,6 +42,8 @@ import ir.batna.parsetest.api.ParseServer
 
 
 class BasicForm {
+    private val tag = "BasicForm"
+
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun GreetingForm(context: Context) {
@@ -75,6 +78,16 @@ class BasicForm {
             return ParseServer().signUpUser(user)
         }
 
+        fun toastApp(id: Int) {
+            Toast.makeText(context, context.getString(id), Toast.LENGTH_SHORT)
+                .show()
+        }
+
+        fun toastApp(string: String) {
+            Toast.makeText(context, string, Toast.LENGTH_SHORT)
+                .show()
+        }
+
         Column(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
@@ -106,6 +119,7 @@ class BasicForm {
             )
 
             Button(onClick = {
+                val pass = PasswordValidator().execute(password)
                 when {
                     name.isEmpty() -> {
                         nameHasError = true
@@ -117,16 +131,29 @@ class BasicForm {
                         emailLabel = context.getString(R.string.errorEmailLabel)
                     }
 
-                    !PasswordValidator().execute(password).successful -> {
+                    !pass.successful -> {
                         passwordHasError = true
                         passwordLabel = context.getString(R.string.errorPasswordLabel)
+                        Log.d(tag, pass.toString())
+
+                        when {
+                            password == "" -> null
+
+                            !pass.hasMinimum ->
+                                toastApp(R.string.errorPasswordMinimum)
+
+                            !pass.hasCapitalizedLetter ->
+                                toastApp(R.string.errorPasswordCapitalize)
+
+                            !pass.hasSpecialCharacter ->
+                                toastApp(R.string.errorPasswordSpecialChar)
+                        }
                         password = ""
                     }
 
                     else -> {
-                        Toast.makeText(context, "All fields are valid!", Toast.LENGTH_SHORT)
-                            .show()
-                        signUpPars()
+                        val result = signUpPars()
+                        toastApp("All fields are valid!\n res is: $result")
                     }
                 }
 

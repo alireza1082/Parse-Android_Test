@@ -29,7 +29,7 @@ class PasswordValidator {
     }
 
     private fun validateSpecialCharacter(password: String): Boolean =
-        password.matches(Regex("[!@#\$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]"))
+        password.matches(Regex(".*[!@#\$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?].*"))
 
     private fun validateCapitalizedLetter(password: String): Boolean =
         password.matches(Regex(".*[A-Z].*"))

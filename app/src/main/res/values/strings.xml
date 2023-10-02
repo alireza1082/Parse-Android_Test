@@ -11,4 +11,8 @@
     <string name="errorNameLabel">Name is empty</string>
     <string name="errorPasswordLabel">Password is invalid!</string>
     <string name="errorEmailLabel">Email address in invalid!</string>
+
+    <string name="errorPasswordMinimum">Must use at least 6 Characters is Password.</string>
+    <string name="errorPasswordCapitalize">Must use one capitalize Character is Password.</string>
+    <string name="errorPasswordSpecialChar">Must use one special Character is Password.</string>
 </resources>
