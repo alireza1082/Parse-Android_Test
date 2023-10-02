@@ -34,7 +34,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import com.parse.ParseException
+import com.parse.ParseUser
 import ir.batna.parsetest.R
+import ir.batna.parsetest.api.ParseServer
+
 
 class BasicForm {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -60,6 +64,15 @@ class BasicForm {
                 emailLabel = context.getString(R.string.defaultEmailLabel)
             if (PasswordValidator().execute(password).successful)
                 context.getString(R.string.defaultPasswordLabel)
+        }
+
+        fun signUpPars(): ParseException? {
+            val user = ParseUser()
+            user.username = name
+            user.setPassword(password)
+            user.email = email
+
+            return ParseServer().signUpUser(user)
         }
 
         Column(
@@ -110,8 +123,11 @@ class BasicForm {
                         password = ""
                     }
 
-                    else -> Toast.makeText(context, "All fields are valid!", Toast.LENGTH_SHORT)
-                        .show()
+                    else -> {
+                        Toast.makeText(context, "All fields are valid!", Toast.LENGTH_SHORT)
+                            .show()
+                        signUpPars()
+                    }
                 }
 
                 checkValidateFields()

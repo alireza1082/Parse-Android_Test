@@ -3,8 +3,11 @@ package ir.batna.parsetest.api
 import android.content.Context
 import android.util.Log
 import com.parse.Parse
+import com.parse.ParseException
 import com.parse.ParseObject
 import com.parse.ParseQuery
+import com.parse.ParseUser
+import com.parse.SignUpCallback
 import ir.batna.parsetest.R
 import ir.batna.parsetest.model.Request
 
@@ -70,5 +73,20 @@ class ParseServer {
 
     fun createParseQuery(objectName: String): ParseQuery<ParseObject>{
         return ParseQuery.getQuery(objectName)
+    }
+
+    fun signUpUser(parseUser: ParseUser): ParseException?{
+        parseUser.signUpInBackground { e ->
+            if (e == null) {
+                // Hooray! Let them use the app now.
+                Log.d(tag, "SignUp successfully")
+                return@signUpInBackground
+            } else {
+                // Sign up didn't succeed. Look at the ParseException
+                // to figure out what went wrong
+                return@signUpInBackground
+            }
+        }
+        return null
     }
 }
