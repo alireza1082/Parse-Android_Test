@@ -75,18 +75,16 @@ class ParseServer {
         return ParseQuery.getQuery(objectName)
     }
 
-    fun signUpUser(parseUser: ParseUser): ParseException?{
+    fun signUpUser(parseUser: ParseUser): String? {
+        var message: String? = null
         parseUser.signUpInBackground { e ->
             if (e == null) {
-                // Hooray! Let them use the app now.
                 Log.d(tag, "SignUp successfully")
-                return@signUpInBackground
             } else {
-                // Sign up didn't succeed. Look at the ParseException
-                // to figure out what went wrong
-                return@signUpInBackground
+                Log.d(tag, e.message!!)
+                message = e.message
             }
         }
-        return null
+        return message
     }
 }

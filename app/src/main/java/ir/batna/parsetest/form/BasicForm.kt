@@ -69,7 +69,7 @@ class BasicForm {
                 context.getString(R.string.defaultPasswordLabel)
         }
 
-        fun signUpPars(): ParseException? {
+        fun signUpPars(): String? {
             val user = ParseUser()
             user.username = name
             user.setPassword(password)
@@ -152,8 +152,12 @@ class BasicForm {
                     }
 
                     else -> {
-                        val result = signUpPars()
-                        toastApp("All fields are valid!\n res is: $result")
+                        signUpPars().let {
+                            if (it == null)
+                                toastApp("All fields are valid!\n SignUp successfully.")
+                            else
+                                toastApp(it)
+                        }
                     }
                 }
 
