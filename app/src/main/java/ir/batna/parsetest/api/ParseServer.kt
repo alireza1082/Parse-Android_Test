@@ -7,9 +7,12 @@ import com.parse.ParseException
 import com.parse.ParseObject
 import com.parse.ParseQuery
 import com.parse.ParseUser
-import com.parse.SignUpCallback
 import ir.batna.parsetest.R
 import ir.batna.parsetest.model.Request
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 
 class ParseServer {
@@ -30,7 +33,7 @@ class ParseServer {
         )
     }
 
-    fun getAllObjects(): List<Request>{
+    fun getAllObjects(): List<Request> {
         return emptyList()
     }
 
@@ -62,7 +65,7 @@ class ParseServer {
 
     fun getFromServer(query: ParseQuery<ParseObject>): List<ParseObject> {
         var result: List<ParseObject> = emptyList()
-        query.findInBackground { objects , e ->
+        query.findInBackground { objects, e ->
             if (objects.isNotEmpty())
                 result = objects
             else
@@ -71,20 +74,37 @@ class ParseServer {
         return result
     }
 
-    fun createParseQuery(objectName: String): ParseQuery<ParseObject>{
+    fun createParseQuery(objectName: String): ParseQuery<ParseObject> {
         return ParseQuery.getQuery(objectName)
     }
 
-    fun signUpUser(parseUser: ParseUser): String? {
-        var message: String? = null
-        parseUser.signUpInBackground { e ->
-            if (e == null) {
-                Log.d(tag, "SignUp successfully")
-            } else {
-                Log.d(tag, e.message!!)
-                message = e.message
+    suspend fun signUpUser(parseUser: ParseUser): String {
+        val message: String
+        val parseException = parseUser.signUpAsync()
+        message = parseException.toString()
+        Log.d(tag, message)
+        return message
+    }
+
+    private suspend fun ParseUser.signUpAsync(): Boolean = suspendCoroutine { cont ->
+        signUpInBackground { e -> cont.resume(e == null) }
+    }
+
+    private fun getCoroutineExceptionHandler(): CoroutineExceptionHandler {
+        return CoroutineExceptionHandler { _, exception ->
+            when (exception) {
+                is TimeoutCancellationException ->
+                    Log.d(tag, "TimeoutCancellationException")
+
+                is ParseException ->
+                    Log.d(tag, exception.message.toString())
+
+                else -> throw exception
             }
         }
-        return message
+    }
+
+    fun getCurrentUser(): ParseUser? {
+        return ParseUser.getCurrentUser()
     }
 }

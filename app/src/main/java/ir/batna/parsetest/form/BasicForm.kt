@@ -1,7 +1,6 @@
 package ir.batna.parsetest.form
 
 import android.content.Context
-import android.util.Log
 import android.util.Patterns
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
@@ -16,66 +15,59 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import com.parse.ParseException
-import com.parse.ParseUser
 import ir.batna.parsetest.R
-import ir.batna.parsetest.api.ParseServer
+import ir.batna.parsetest.viewmodel.SignUpViewModel
 
 
-class BasicForm {
+class BasicForm() {
     private val tag = "BasicForm"
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun GreetingForm(context: Context) {
+    fun GreetingForm(context: Context, signUpViewModel: SignUpViewModel) {
 
-        var name by remember { mutableStateOf("") }
+        val name = signUpViewModel.usernameState.observeAsState(initial = "")
         var nameHasError by remember { mutableStateOf(false) }
         var nameLabel by remember { mutableStateOf(context.getString(R.string.defaultNameLabel)) }
 
-        var password by rememberSaveable { mutableStateOf("") }
+        val password = signUpViewModel.passwordState.observeAsState(initial = "")
         var passwordHasError by remember { mutableStateOf(false) }
         var passwordLabel by remember { mutableStateOf(context.getString(R.string.defaultPasswordLabel)) }
 
-        var email by remember { mutableStateOf("") }
+        val email = signUpViewModel.mailState.observeAsState(initial = "")
         var emailHasError by remember { mutableStateOf(false) }
         var emailLabel by remember { mutableStateOf(context.getString(R.string.defaultEmailLabel)) }
 
-        fun checkValidateFields() {
-            if (name.isNotEmpty())
+        fun updateFieldsLabels() {
+            if (name.value.isNotEmpty())
                 nameLabel = context.getString(R.string.defaultNameLabel)
-            if (Patterns.EMAIL_ADDRESS.matcher(email).matches())
+            else
+                context.getString(R.string.errorNameLabel)
+            if (Patterns.EMAIL_ADDRESS.matcher(email.value).matches())
                 emailLabel = context.getString(R.string.defaultEmailLabel)
-            if (PasswordValidator().execute(password).successful)
+            else
+                emailLabel = context.getString(R.string.errorEmailLabel)
+            if (PasswordValidator().execute(password.value).successful)
                 context.getString(R.string.defaultPasswordLabel)
-        }
-
-        fun signUpPars(): String? {
-            val user = ParseUser()
-            user.username = name
-            user.setPassword(password)
-            user.email = email
-
-            return ParseServer().signUpUser(user)
+            else
+                passwordLabel = context.getString(R.string.errorPasswordLabel)
         }
 
         fun toastApp(id: Int) {
@@ -93,25 +85,24 @@ class BasicForm {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             TextField(
-                value = name,
-                onValueChange = { name = it },
+                value = name.value,
+                onValueChange = { signUpViewModel.updateUsername(it) },
                 label = { Text(text = nameLabel) },
-                textStyle = TextStyle(color = Color.Blue, fontWeight = FontWeight.Bold),
                 modifier = Modifier.padding(20.dp)
             )
 
             TextField(
-                value = email,
+                value = email.value,
                 isError = emailHasError,
                 label = { Text(text = emailLabel) },
                 modifier = Modifier.padding(20.dp),
-                onValueChange = { value -> email = value },
+                onValueChange = { signUpViewModel.updateMail(it) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             )
 
             TextField(
-                value = password,
-                onValueChange = { password = it },
+                value = password.value,
+                onValueChange = { signUpViewModel.updatePassword(it) },
                 label = { Text(text = passwordLabel) },
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -119,49 +110,8 @@ class BasicForm {
             )
 
             Button(onClick = {
-                val pass = PasswordValidator().execute(password)
-                when {
-                    name.isEmpty() -> {
-                        nameHasError = true
-                        nameLabel = context.getString(R.string.errorNameLabel)
-                    }
-
-                    !Patterns.EMAIL_ADDRESS.matcher(email).matches() -> {
-                        emailHasError = true
-                        emailLabel = context.getString(R.string.errorEmailLabel)
-                    }
-
-                    !pass.successful -> {
-                        passwordHasError = true
-                        passwordLabel = context.getString(R.string.errorPasswordLabel)
-                        Log.d(tag, pass.toString())
-
-                        when {
-                            password == "" -> null
-
-                            !pass.hasMinimum ->
-                                toastApp(R.string.errorPasswordMinimum)
-
-                            !pass.hasCapitalizedLetter ->
-                                toastApp(R.string.errorPasswordCapitalize)
-
-                            !pass.hasSpecialCharacter ->
-                                toastApp(R.string.errorPasswordSpecialChar)
-                        }
-                        password = ""
-                    }
-
-                    else -> {
-                        signUpPars().let {
-                            if (it == null)
-                                toastApp("All fields are valid!\n SignUp successfully.")
-                            else
-                                toastApp(it)
-                        }
-                    }
-                }
-
-                checkValidateFields()
+                signUpViewModel.submitButton()
+                updateFieldsLabels()
 
             }) {
                 Text("Submit")
@@ -187,6 +137,10 @@ class BasicForm {
                         Text(text = "Jetpack", style = MaterialTheme.typography.bodyLarge)
                     }
                 }
+            }
+
+            Column {
+                CircularProgressIndicator()
             }
         }
     }
