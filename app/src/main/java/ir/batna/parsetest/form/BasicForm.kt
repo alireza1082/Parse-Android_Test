@@ -1,6 +1,7 @@
 package ir.batna.parsetest.form
 
 import android.content.Context
+import android.util.Log
 import android.util.Patterns
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
@@ -36,12 +37,13 @@ import ir.batna.parsetest.R
 import ir.batna.parsetest.viewmodel.SignUpViewModel
 
 
-class BasicForm() {
+class BasicForm {
     private val tag = "BasicForm"
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun GreetingForm(context: Context, signUpViewModel: SignUpViewModel) {
+        var errorResult by remember { mutableStateOf("") }
 
         val name = signUpViewModel.usernameState.observeAsState(initial = "")
         var nameHasError by remember { mutableStateOf(false) }
@@ -56,18 +58,24 @@ class BasicForm() {
         var emailLabel by remember { mutableStateOf(context.getString(R.string.defaultEmailLabel)) }
 
         fun updateFieldsLabels() {
-            if (name.value.isNotEmpty())
-                nameLabel = context.getString(R.string.defaultNameLabel)
+            nameLabel = if (name.value.isNotEmpty())
+                context.getString(R.string.defaultNameLabel)
             else
                 context.getString(R.string.errorNameLabel)
-            if (Patterns.EMAIL_ADDRESS.matcher(email.value).matches())
-                emailLabel = context.getString(R.string.defaultEmailLabel)
+            emailLabel = if (Patterns.EMAIL_ADDRESS.matcher(email.value).matches())
+                context.getString(R.string.defaultEmailLabel)
             else
-                emailLabel = context.getString(R.string.errorEmailLabel)
-            if (PasswordValidator().execute(password.value).successful)
+                context.getString(R.string.errorEmailLabel)
+            passwordLabel = if (PasswordValidator().execute(password.value).successful)
                 context.getString(R.string.defaultPasswordLabel)
             else
-                passwordLabel = context.getString(R.string.errorPasswordLabel)
+                context.getString(R.string.errorPasswordLabel)
+        }
+
+        fun updateFieldsError() {
+            nameHasError = name.value.isEmpty()
+            emailHasError = !Patterns.EMAIL_ADDRESS.matcher(email.value).matches()
+            passwordHasError = !PasswordValidator().execute(password.value).successful
         }
 
         fun toastApp(id: Int) {
@@ -86,6 +94,7 @@ class BasicForm() {
         ) {
             TextField(
                 value = name.value,
+                isError = nameHasError,
                 onValueChange = { signUpViewModel.updateUsername(it) },
                 label = { Text(text = nameLabel) },
                 modifier = Modifier.padding(20.dp)
@@ -103,6 +112,7 @@ class BasicForm() {
             TextField(
                 value = password.value,
                 onValueChange = { signUpViewModel.updatePassword(it) },
+                isError = passwordHasError,
                 label = { Text(text = passwordLabel) },
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -110,9 +120,10 @@ class BasicForm() {
             )
 
             Button(onClick = {
-                signUpViewModel.submitButton()
+                errorResult = signUpViewModel.submitButton()
+                Log.i(tag, "submit button with result $errorResult")
                 updateFieldsLabels()
-
+                updateFieldsError()
             }) {
                 Text("Submit")
 
