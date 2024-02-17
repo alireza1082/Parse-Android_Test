@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "395903057760",
+    "project_id": "batna-c0f53",
+    "storage_bucket": "batna-c0f53.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:395903057760:android:d80cf9d74efdd3a8d4a805",
+        "android_client_info": {
+          "package_name": "ir.batna.parsetest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC3dMbzNFHOch395LFAY82j6U3HmQi5djA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
