@@ -16,6 +16,7 @@ import com.parse.Parse
 import ir.batna.parsetest.form.BasicForm
 import ir.batna.parsetest.ui.theme.ParseTestTheme
 import ir.batna.parsetest.viewmodel.SignUpViewModel
+import io.sentry.Sentry
 
 
 class MainActivity : ComponentActivity() {
@@ -37,8 +38,8 @@ class MainActivity : ComponentActivity() {
             it.initParse(this.applicationContext)
         }
         Log.d("alireza", Parse.getServer().toString())
+        Sentry.captureMessage("testing SDK setup")
 
-        getDeviceInfo()
     }
 
     @SuppressLint("HardwareIds")

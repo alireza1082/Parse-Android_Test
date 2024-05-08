@@ -38,6 +38,22 @@
             android:name="com.parse.CLIENT_KEY"
             android:value="@string/client_key" />
 
+        <meta-data android:name="io.sentry.dsn" android:value="http://5f9a1ac645d44865b1e1b2fe90abdcf8@192.168.1.206:9000/5" />
+
+        <!-- enable automatic breadcrumbs for user interactions (clicks, swipes, scrolls) -->
+        <meta-data android:name="io.sentry.traces.user-interaction.enable" android:value="true" />
+        <!-- enable screenshot for crashes -->
+        <meta-data android:name="io.sentry.attach-screenshot" android:value="true" />
+        <!-- enable view hierarchy for crashes -->
+        <meta-data android:name="io.sentry.attach-view-hierarchy" android:value="true" />
+
+        <!-- enable the performance API by setting a sample-rate, adjust in production env -->
+        <meta-data android:name="io.sentry.traces.sample-rate" android:value="1.0" />
+        <!-- enable profiling when starting transactions, adjust in production env -->
+        <meta-data android:name="io.sentry.traces.profiling.sample-rate" android:value="1.0" />
+
+        <meta-data android:name="io.sentry.debug" android:value="true" />
+
     </application>
 
 </manifest>
