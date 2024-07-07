@@ -13,10 +13,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.parse.Parse
+import io.sentry.Sentry
 import ir.batna.parsetest.form.BasicForm
 import ir.batna.parsetest.ui.theme.ParseTestTheme
 import ir.batna.parsetest.viewmodel.SignUpViewModel
-import io.sentry.Sentry
 
 
 class MainActivity : ComponentActivity() {
@@ -40,6 +40,9 @@ class MainActivity : ComponentActivity() {
         Log.d("alireza", Parse.getServer().toString())
         Sentry.captureMessage("testing SDK setup")
 
+        Sentry.metrics().timing("load_user_profile") {
+            getDeviceInfo()
+        }
     }
 
     @SuppressLint("HardwareIds")
@@ -73,5 +76,15 @@ class MainActivity : ComponentActivity() {
                     "networkOperatorName: ${manager.networkOperatorName} \n" +
                     "networkCountryIso: ${manager.networkCountryIso} \n"
         )
+
+        Sentry.metrics()
+            .increment(
+                "button_get_device_info", // key
+                1.0,                  // value
+                null,                 // unit
+                mapOf(                // tags
+                    "check" to "deviceInfo"
+                )
+            )
     }
 }
