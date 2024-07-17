@@ -3,7 +3,6 @@ package ir.batna.parsetest
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
-import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -12,15 +11,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.parse.Parse
 import io.sentry.Sentry
-import ir.batna.parsetest.form.BasicForm
+import io.sentry.android.core.SentryAndroidOptions
+import ir.batna.parsetest.form.TestForm
 import ir.batna.parsetest.ui.theme.ParseTestTheme
-import ir.batna.parsetest.viewmodel.SignUpViewModel
 
 
 class MainActivity : ComponentActivity() {
-    private lateinit var signUpViewModel: SignUpViewModel
+    //    private lateinit var signUpViewModel: SignUpViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -30,19 +28,31 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
-                    BasicForm().GreetingForm(this, signUpViewModel = signUpViewModel)
+                    TestForm().GreetingForm(this, onClick = { onClick() })
                 }
             }
         }
-        signUpViewModel = SignUpViewModel().also {
-            it.initParse(this.applicationContext)
-        }
-        Log.d("alireza", Parse.getServer().toString())
+        SentryAndroidOptions().isEnableMetrics = true
+//        signUpViewModel = SignUpViewModel().also {
+//            it.initParse(this.applicationContext)
+//        }
+        Log.d("alireza", SentryAndroidOptions().isEnableMetrics.toString())
         Sentry.captureMessage("testing SDK setup")
+        Sentry.reportFullyDisplayed()
 
         Sentry.metrics().timing("load_user_profile") {
             getDeviceInfo()
         }
+    }
+
+    private fun onClick() {
+        Sentry.captureException(RuntimeException("This app uses Sentry! :)"))
+        Sentry.metrics()
+            .increment(
+                "button_on_click", // key
+                1.0,                  // value
+                null,                 // unit
+            )
     }
 
     @SuppressLint("HardwareIds")
@@ -59,7 +69,6 @@ class MainActivity : ComponentActivity() {
 
         val manager = getSystemService(TELEPHONY_SERVICE) as TelephonyManager
         manager.simCarrierIdName
-        val localSubscriptionManager = SubscriptionManager.from(this)
 
         Log.i(
             "MainActivity", "deviceBrand: $deviceBrand \n" +
